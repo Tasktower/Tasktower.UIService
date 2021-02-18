@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 interface IForcast {
-    date?: Date,
+    date?: string,
     temperatureC?: number,
     temperatureF?: number,
     summary?: string
@@ -37,7 +37,7 @@ export class FetchData extends Component<any, IState> {
         </thead>
         <tbody>
           {forecasts.map(forecast =>
-            <tr key={forecast?.date?.toISOString() || ""}>
+            <tr key={forecast.date}>
               <td>{forecast.date}</td>
               <td>{forecast.temperatureC}</td>
               <td>{forecast.temperatureF}</td>
