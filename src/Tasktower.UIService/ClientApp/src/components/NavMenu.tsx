@@ -4,17 +4,18 @@ import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import LoginButton from './auth/LoginButton';
 import LogoutButton from './auth/LogoutButton';
+import { Auth0Context  } from '@auth0/auth0-react';
 
 interface IState {
-    collapsed: boolean
+  collapsed: boolean,
 }
 
 export class NavMenu extends Component<any, IState> {
-  static displayName = NavMenu.name;
+    static displayName = NavMenu.name;
+    static contextType = Auth0Context;
 
   constructor(props: any) {
     super(props);
-
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
       collapsed: true
@@ -27,7 +28,8 @@ export class NavMenu extends Component<any, IState> {
     });
   }
 
-  render () {
+    render() {
+    const { isAuthenticated }: {isAuthenticated: boolean} = this.context;
     return (
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
@@ -45,13 +47,21 @@ export class NavMenu extends Component<any, IState> {
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
                 </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/profile">Profile</NavLink>
-                </NavItem>
-                <NavItem>
-                  <LoginButton />
-                  <LogoutButton />
-                </NavItem>
+                {isAuthenticated ?
+                  (<>
+                    <NavItem >
+                      <NavLink tag={Link} className="text-dark" to="/profile">Profile</NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <LogoutButton />
+                    </NavItem>
+                  </>):
+                  (
+                    <NavItem >
+                        <LoginButton />
+                    </ NavItem>
+                  )
+                }
               </ul>
             </Collapse>
           </Container>
