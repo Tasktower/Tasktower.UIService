@@ -10,14 +10,19 @@ const Profile = () => {
     if (!isAuthenticated) {
         return (<div>401 unauthorized</div>)
     }
-    getIdTokenClaims()
-        .then(x => console.log(x.__raw)).catch(console.error);
+    getIdTokenClaims().then(x => console.log(x.__raw)).catch(console.error);
+    const roles: Array<string> = user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    const rolesList = roles.map(r => (<li>{r}</li>));
+    console.log(user);
     return (
         <div>
             <img src={user.picture} alt={user.name} />
             <h2>{user.name}</h2>
             <p>{user.email}</p>
-            <p>{JSON.stringify(user)}</p>
+            <p><u>Roles</u></p>
+            <ol>
+             { rolesList }
+            </ol>
         </div> 
     );
 };

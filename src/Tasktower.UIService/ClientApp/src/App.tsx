@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
-import Profile from './components/Profile'
+import { Layout } from './shared/outline/Layout';
+import { Home } from './home/Home';
+import { FetchData } from './fetchdata/FetchData';
+import { Counter } from './counter/Counter';
+import Profile from './profile/Profile'
 
-import './custom.scss'
+import './styles.scss'
 
 export default class App extends Component {
   static displayName = App.name;
