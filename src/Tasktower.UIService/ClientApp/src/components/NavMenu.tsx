@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import './NavMenu.css';
+import './NavMenu.scss';
 import LoginButton from './auth/LoginButton';
 import LogoutButton from './auth/LogoutButton';
 import { Auth0Context  } from '@auth0/auth0-react';
