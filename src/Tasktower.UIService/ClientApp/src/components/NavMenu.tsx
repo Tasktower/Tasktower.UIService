@@ -5,11 +5,14 @@ import './NavMenu.css';
 import LoginButton from './auth/LoginButton';
 import LogoutButton from './auth/LogoutButton';
 
+interface IState {
+    collapsed: boolean
+}
 
-export class NavMenu extends Component {
+export class NavMenu extends Component<any, IState> {
   static displayName = NavMenu.name;
 
-  constructor (props) {
+  constructor(props: any) {
     super(props);
 
     this.toggleNavbar = this.toggleNavbar.bind(this);

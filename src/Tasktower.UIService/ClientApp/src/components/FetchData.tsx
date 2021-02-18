@@ -1,9 +1,21 @@
 import React, { Component } from 'react';
 
-export class FetchData extends Component {
+interface IForcast {
+    date?: Date,
+    temperatureC?: number,
+    temperatureF?: number,
+    summary?: string
+}
+
+interface IState {
+    forecasts: Array<IForcast>,
+    loading: boolean
+}
+
+export class FetchData extends Component<any, IState> {
   static displayName = FetchData.name;
 
-  constructor(props) {
+    constructor(props: any) {
     super(props);
     this.state = { forecasts: [], loading: true };
   }
@@ -12,7 +24,7 @@ export class FetchData extends Component {
     this.populateWeatherData();
   }
 
-  static renderForecastsTable(forecasts) {
+  static renderForecastsTable(forecasts: Array<IForcast>) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
@@ -25,7 +37,7 @@ export class FetchData extends Component {
         </thead>
         <tbody>
           {forecasts.map(forecast =>
-            <tr key={forecast.date}>
+            <tr key={forecast?.date?.toISOString() || ""}>
               <td>{forecast.date}</td>
               <td>{forecast.temperatureC}</td>
               <td>{forecast.temperatureF}</td>
@@ -51,9 +63,9 @@ export class FetchData extends Component {
     );
   }
 
-  async populateWeatherData() {
-    const response = await fetch('weatherforecast');
-    const data = await response.json();
+    async populateWeatherData() {
+    const response: Response = await fetch('weatherforecast');
+    const data: Array<IForcast> = await response.json();
     this.setState({ forecasts: data, loading: false });
   }
 }
