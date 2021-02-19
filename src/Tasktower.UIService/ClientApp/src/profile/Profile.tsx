@@ -12,7 +12,7 @@ const Profile = () => {
     }
     getIdTokenClaims().then(x => console.log(x.__raw)).catch(console.error);
     const roles: Array<string> = user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    const rolesList = roles.map(r => (<li>{r}</li>));
+    const rolesList = roles?.map(r => (<li>{r}</li>));
     console.log(user);
     return (
         <div>
