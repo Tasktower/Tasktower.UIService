@@ -10,10 +10,12 @@ const Profile = () => {
     if (!isAuthenticated) {
         return (<div>401 unauthorized</div>)
     }
-    getIdTokenClaims().then(x => console.log(x.__raw)).catch(console.error);
-    const roles: Array<string> = user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    const rolesList = roles?.map(r => (<li>{r}</li>));
-    console.log(user);
+    getIdTokenClaims().then(x => {
+        console.log(user);
+        console.log(x?.__raw);
+    }).catch(console.error);
+    const roles: Array<string> = user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
+    const rolesList: Array<JSX.Element> = roles?.map(r => (<li>{r}</li>));
     return (
         <div>
             <img src={user.picture} alt={user.name} />
