@@ -15,7 +15,7 @@ const Profile = () => {
         console.log(x?.__raw);
     }).catch(console.error);
     const roles: Array<string> = user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
-    const rolesList: Array<JSX.Element> = roles?.map(r => (<li>{r}</li>));
+    const rolesList: Array<JSX.Element> = ((roles == undefined)?[]:roles).map(r => (<li>{r}</li>));
     return (
         <div>
             <img src={user.picture} alt={user.name} />
