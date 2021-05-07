@@ -45,9 +45,26 @@ namespace Tasktower.UIService
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
+            
+            if (Configuration.GetValue("Render:Cache", true))
+            {
+                app.UseStaticFiles();
+                app.UseSpaStaticFiles();
+            } 
+            else
+            {
+                var staticFileOptions = new StaticFileOptions
+                {
+                    OnPrepareResponse = context =>
+                    {
+                        context.Context.Response.Headers.Add("Cache-Control", "no-cache");
+                        context.Context.Response.Headers.Add("Expires", "-1");
+                    }
+                }; 
+                app.UseStaticFiles(staticFileOptions);
+                app.UseSpaStaticFiles(staticFileOptions);
+            }
+            
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
