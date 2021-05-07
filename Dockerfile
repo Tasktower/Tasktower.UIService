@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install --yes nodejs
-COPY . Tasktower.UIService/Tasktower.UIService
+COPY . Tasktower.UIService
 WORKDIR  /Tasktower.UIService/Tasktower.UIService/ClientApp
 RUN rm -rf node_modules build
 RUN npm install
