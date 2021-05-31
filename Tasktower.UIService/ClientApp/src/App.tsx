@@ -7,19 +7,19 @@ import './App.scss';
 function App() {
   const [cookies] = useCookies(["XSRF-TOKEN"]);
   
-  useEffect(() => {
-    fetch("/client/anti-forgery", {credentials: "include", method: "get"})
-      .catch(console.log);
-  })
-  
   const onClick = () => {
-    fetch("/services/project/api/test/auth", {
-      method: "post",
-      credentials: "include",
-      headers: {
-        "X-XSRF-TOKEN": cookies["XSRF-TOKEN"]
-      }
-    })
+    fetch("/client/auth/tokens", {credentials: "include", method: "get"})
+      .then(r => r.json())
+      .then(r => 
+        fetch("/services/project/api/test/auth", {
+          method: "get", 
+          credentials: "include", 
+          headers: {
+            "X-XSRF-TOKEN": cookies["XSRF-TOKEN"],
+            "Authorization": `Bearer ${r["AccessToken"]}`
+          }
+        }))
+      .then(r => r.json())
       .then(r => console.log(r))
       .catch(e => console.log(e))
   }
