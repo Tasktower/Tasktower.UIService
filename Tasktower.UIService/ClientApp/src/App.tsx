@@ -16,7 +16,7 @@ function App() {
           credentials: "include", 
           headers: {
             "X-XSRF-TOKEN": cookies["XSRF-TOKEN"],
-            "Authorization": `Bearer ${r["AccessToken"]}`
+            "Authorization": `Bearer ${r["accessToken"]}`
           }
         }))
       .then(r => r.json())
