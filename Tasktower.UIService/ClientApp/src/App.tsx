@@ -1,48 +1,28 @@
-import React, {useEffect} from 'react';
+import React, {FormEvent, useEffect} from 'react';
 import {useCookies} from "react-cookie";
 
 import logo from './logo.svg';
 import './App.scss';
 
 function App() {
-  const [cookies] = useCookies(['XSRF-TOKEN']);
+  const [cookies] = useCookies(["XSRF-TOKEN"]);
   
-  const login = async () => {
-    try {
-      let r = await fetch("/client/auth/login?returnUrl=" + encodeURI(window.origin + "/"), {
-        method: "get",
-        credentials: "include",
-        headers: {
-          "X-XSRF-TOKEN": cookies["XSRF-TOKEN"]
-        },
-        redirect: "manual"
-      });
-      console.log(r)
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const logout = async () => {
-    try {
-      let r = await fetch("/client/auth/logout?returnUrl=" + encodeURI(window.origin + "/"), {
-        method: "get",
-        credentials: "include",
-        headers: {
-          "X-XSRF-TOKEN": cookies["XSRF-TOKEN"]
-        },
-        redirect: "manual"
-      });
-      console.log(r)
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  useEffect(() => {
+    fetch("/client/anti-forgery", {credentials: "include", method: "get"})
+      .catch(console.log);
+  })
   
-  fetch("https://localhost:9090/services/project/api/test/auth", {credentials: "include"})
-    .then(r => r.json())
-    .then(r => console.log(r))
-    .catch(e => console.log(e))
+  const onClick = () => {
+    fetch("/services/project/api/test/auth", {
+      method: "post",
+      credentials: "include",
+      headers: {
+        "X-XSRF-TOKEN": cookies["XSRF-TOKEN"]
+      }
+    })
+      .then(r => console.log(r))
+      .catch(e => console.log(e))
+  }
   
   return (
     <div className="App">
@@ -68,8 +48,7 @@ function App() {
         <input name="returnUrl" type="hidden" value={encodeURI(window.origin + "/")}/>
         <input name="submit" type="submit" value="logout"/>
       </form>
-      <button onClick={login}>Login</button>
-      <button onClick={logout}>Logout</button>
+      <button onClick={onClick}>Click</button>
     </div>
   );
 }
