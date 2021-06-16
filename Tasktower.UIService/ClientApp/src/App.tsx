@@ -1,27 +1,55 @@
-import React, {FormEvent, useEffect} from 'react';
-import {useCookies} from "react-cookie";
-
+import React, {FormEvent, useEffect, useState} from 'react';
+import Cookies from 'js-cookie';
 import logo from './logo.svg';
 import './App.scss';
 
 function App() {
-  const [cookies] = useCookies(["XSRF-TOKEN"]);
+  // const [cookies] = useCookies(["XSRF-TOKEN"]);
+  const [xsrfToken, setXsrfToken] = useState("");
+  const [testVal, setTestVal] = useState("init");
+  const [user, setUser] = useState("");
+  
+  useEffect(() => {
+    fetch("/client/anti-forgery", {credentials: "include"})
+      .then(() => {
+        setXsrfToken(Cookies.get("XSRF-TOKEN") || "");
+      })
+      .catch(e => {
+        console.log(e.toString());
+      });
+  }, []);
   
   const onClick = () => {
-    fetch("/client/auth/tokens", {credentials: "include", method: "get"})
+    fetch("/client/anti-forgery/test", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "X-XSRF-TOKEN": xsrfToken
+      }})
       .then(r => r.json())
-      .then(r => 
-        fetch("/services/project/api/test/auth", {
-          method: "get", 
-          credentials: "include", 
-          headers: {
-            "X-XSRF-TOKEN": cookies["XSRF-TOKEN"],
-            "Authorization": `Bearer ${r["accessToken"]}`
-          }
-        }))
+      .then(r => {
+        setTestVal(JSON.stringify(r));
+        console.log(r)
+      })
+      .catch(e => {
+        setTestVal(e.toString());
+        console.log(e);
+      });
+
+    fetch("/client/auth/user", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "X-XSRF-TOKEN": xsrfToken
+      }})
       .then(r => r.json())
-      .then(r => console.log(r))
-      .catch(e => console.log(e))
+      .then(r => {
+        setUser(JSON.stringify(r));
+        console.log(r)
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
   
   return (
@@ -40,15 +68,22 @@ function App() {
           Learn React
         </a>
       </header>
-      <form action={"/client/auth/login"} method="get">
-        <input name="returnUrl" type="hidden" value={encodeURI(window.origin + "/")}/>
+      <form action={`https://localhost:9090/client/auth/login?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+        <input name="XSRF-TOKEN" type="hidden" value={xsrfToken}/>
         <input name="submit" type="submit" value="login"/>
       </form>
-      <form action={"/client/auth/logout"} method="get">
-        <input name="returnUrl" type="hidden" value={encodeURI(window.origin + "/")}/>
+      <form action={`https://localhost:9090/client/auth/logout?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+        <input name="XSRF-TOKEN" type="hidden" value={xsrfToken}/>
         <input name="submit" type="submit" value="logout"/>
       </form>
       <button onClick={onClick}>Click</button>
+      <div>
+        {xsrfToken}
+        <br/>
+        {testVal}
+        <br/>
+        {user}
+      </div>
     </div>
   );
 }

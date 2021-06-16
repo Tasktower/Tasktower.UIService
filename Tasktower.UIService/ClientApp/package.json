@@ -12,10 +12,10 @@
     "@types/react-dom": "^17.0.5",
     "@types/react-redux": "^7.1.16",
     "install": "^0.13.0",
+    "js-cookie": "^2.2.1",
     "node-sass": "^6.0.0",
     "npm": "^7.15.0",
     "react": "^17.0.2",
-    "react-cookie": "^4.0.3",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
     "react-scripts": "4.0.3",
@@ -46,5 +46,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://localhost:9090"
+  "proxy": "https://localhost:9090",
+  "devDependencies": {
+    "@types/js-cookie": "^2.2.6"
+  }
 }
