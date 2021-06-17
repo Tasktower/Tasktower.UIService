@@ -6,6 +6,8 @@ import {ajax, AjaxError} from 'rxjs/ajax';
 import {catchError, map, take, tap} from "rxjs/operators";
 import {Observable, throwError} from "rxjs";
 
+const baseUrl = process.env.REACT_APP_BASE_URL || "";
+
 enum HttpMethods {
   GET = "GET",
   POST = "POST",
@@ -17,7 +19,7 @@ enum CookieNames {
   XSRF = "XSRF-TOKEN"
 }
 
-enum RequestHeaders {
+enum HeaderNames {
   XSRF = "X-XSRF-TOKEN"
 }
 
@@ -28,7 +30,7 @@ interface ErrorInfo {
 }
 
 function App() {
-  const [xsrfToken, setXsrfToken] = useState("");
+  const [xsrfFormToken, setXsrfFormToken] = useState("");
   const [errInfo, setErrorInfo] = useState<ErrorInfo>({enabled: false})
   const [testVal, setTestVal] = useState("init");
   const [user, setUser] = useState("");
@@ -45,13 +47,15 @@ function App() {
   useEffect(() => {
     ajax({
       method: HttpMethods.GET, 
-      url: "/client/anti-forgery", 
-      withCredentials: true
+      url: `${baseUrl}/client/anti-forgery`, 
+      withCredentials: true,
+      xsrfCookieName: CookieNames.XSRF,
+      xsrfHeaderName: HeaderNames.XSRF
     })
       .pipe(
         tap(_ => {
           setErrorInfo({...errInfo, enabled: false});
-          setXsrfToken(Cookies.get(CookieNames.XSRF) || "");
+          setXsrfFormToken(Cookies.get(CookieNames.XSRF) || "");
         }),
         catchError(errorHandler)
       )
@@ -59,13 +63,12 @@ function App() {
   }, []);
   
   const onClick = () => {
-    const headers: Record<string, string> = {};
-    headers[RequestHeaders.XSRF] = xsrfToken;
     
     ajax({
       method: HttpMethods.POST, 
-      url: "/client/anti-forgery/test", 
-      headers: headers,
+      url: `${baseUrl}/client/anti-forgery/test`, 
+      xsrfCookieName: CookieNames.XSRF,
+      xsrfHeaderName: HeaderNames.XSRF,
       withCredentials: true
     })
       .pipe(
@@ -81,8 +84,9 @@ function App() {
 
     ajax({
       method: HttpMethods.GET,
-      url: "/client/auth/user",
-      headers: headers,
+      url: `${baseUrl}/client/auth/user`,
+      xsrfCookieName: CookieNames.XSRF,
+      xsrfHeaderName: HeaderNames.XSRF,
       withCredentials: true
     })
       .pipe(
@@ -97,14 +101,15 @@ function App() {
       .subscribe();
   }
   
+  console.log(process.env);
   return (
     <div>
-      <form action={`https://localhost:9090/client/auth/login?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
-        <input name="XSRF-TOKEN" type="hidden" value={xsrfToken}/>
+      <form action={`${baseUrl}/client/auth/login?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+        <input name="XSRF-TOKEN" type="hidden" value={xsrfFormToken}/>
         <input name="submit" type="submit" value="login"/>
       </form>
-      <form action={`https://localhost:9090/client/auth/logout?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
-        <input name="XSRF-TOKEN" type="hidden" value={xsrfToken}/>
+      <form action={`${baseUrl}/client/auth/logout?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+        <input name="XSRF-TOKEN" type="hidden" value={xsrfFormToken}/>
         <input name="submit" type="submit" value="logout"/>
       </form>
       <button onClick={onClick}>Click</button>
@@ -114,10 +119,11 @@ function App() {
             <h3>Status: {errInfo.status}</h3>
             <p>{errInfo.message}</p>
           </div>): 
-          (<></>)}
+          (<></>)
+        }
         <br />
         <h4>XSRF</h4>
-        {xsrfToken}
+        {xsrfFormToken}
         <br/>
         <h4>test val</h4>
         {testVal}
