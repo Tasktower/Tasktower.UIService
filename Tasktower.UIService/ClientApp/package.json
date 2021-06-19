@@ -25,6 +25,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-https-unix": "HTTPS=true npm start",
+    "start-https-wincmd": "set HTTPS=true&&npm start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
