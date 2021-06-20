@@ -1,10 +1,10 @@
-import React, {FormEvent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Cookies from 'js-cookie';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.scss';
 import {ajax, AjaxError} from 'rxjs/ajax';
 import {catchError, map, take, tap} from "rxjs/operators";
-import {Observable, throwError} from "rxjs";
+import {throwError} from "rxjs";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -33,7 +33,8 @@ function App() {
   const [xsrfFormToken, setXsrfFormToken] = useState("");
   const [errInfo, setErrorInfo] = useState<ErrorInfo>({enabled: false})
   const [testVal, setTestVal] = useState("init");
-  const [user, setUser] = useState("");
+  const [userAccessData, setUserAccessData] = useState("");
+  const [userIdentityData, setUserIdentityData] = useState("");
   
   const errorHandler = (err: AjaxError) => {
     console.error("status:" + err.status)
@@ -84,16 +85,34 @@ function App() {
 
     ajax({
       method: HttpMethods.GET,
-      url: `${baseUrl}/client/auth/user`,
+      url: `${baseUrl}/client/auth/user/access-data`,
       xsrfCookieName: CookieNames.XSRF,
       xsrfHeaderName: HeaderNames.XSRF,
       withCredentials: true
     })
       .pipe(
-        map(r => JSON.stringify(r.response)),
+        map(r => JSON.stringify(r.response, null, 20)),
         tap(v => {
           setErrorInfo({...errInfo, enabled: false});
-          setUser(v);
+          setUserAccessData(v);
+          console.log(v);
+        }),
+        catchError(errorHandler),
+      )
+      .subscribe();
+
+    ajax({
+      method: HttpMethods.GET,
+      url: `${baseUrl}/client/auth/user/identity`,
+      xsrfCookieName: CookieNames.XSRF,
+      xsrfHeaderName: HeaderNames.XSRF,
+      withCredentials: true
+    })
+      .pipe(
+        map(r => JSON.stringify(r.response, null, 20)),
+        tap(v => {
+          setErrorInfo({...errInfo, enabled: false});
+          setUserIdentityData(v);
           console.log(v);
         }),
         catchError(errorHandler),
@@ -128,8 +147,10 @@ function App() {
         <h4>test val</h4>
         {testVal}
         <br/>
-        <h4>user</h4>
-        {user}
+        <h4>user access</h4>
+        {userAccessData}
+        <h4>user identity</h4>
+        {userIdentityData}
       </div>
     </div>
   );
