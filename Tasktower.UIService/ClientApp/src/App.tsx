@@ -123,13 +123,13 @@ function App() {
   console.log(process.env);
   return (
     <div>
-      <form action={`${baseUrl}/client/auth/login?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+      <form action={`${baseUrl}/client/auth/sign-in?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
         <input name="XSRF-TOKEN" type="hidden" value={xsrfFormToken}/>
-        <input name="submit" type="submit" value="login"/>
+        <input name="submit" type="submit" value="sign in"/>
       </form>
-      <form action={`${baseUrl}/client/auth/logout?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
+      <form action={`${baseUrl}/client/auth/sign-out?returnUrl=${encodeURI(window.origin + "/")}`} method="post">
         <input name="XSRF-TOKEN" type="hidden" value={xsrfFormToken}/>
-        <input name="submit" type="submit" value="logout"/>
+        <input name="submit" type="submit" value="sign out"/>
       </form>
       <button onClick={onClick}>Click</button>
       <div>
